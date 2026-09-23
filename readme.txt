@@ -1,0 +1,147 @@
+=== Store file uploads for Contact Form 7 ===
+Contributors: mirceatm
+Donate link: https://paypal.me/mirceatm
+Tags: contact, form, library, file, upload
+Requires at least: 4.9
+Tested up to: 7.0
+Stable tag: 1.3.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+When this is active, attachments sent trough Contact Form 7 shortcode [file ] will be stored in your Media Library
+
+== Description ==
+
+By default, [Contact Form 7](https://wordpress.org/plugins/contact-form-7/) dose not keep data it sends trough it's contact forms.
+While plugins like [Flamingo](https://wordpress.org/plugins/flamingo/) save that data,  uploaded files are not added to Media Library.
+This plugin will save uploaded files to Media Library before email is sent by CF7.
+This plugin will raise an event with the the full file path & name. 
+Subscribe to `nmr_create_attachment_file_name` filter to get and/or update data before attachment is added to media library.
+
+`
+// The filter callback function.
+function example_callback( $file_name ) {
+    // (maybe) modify $file_name.
+    return $file_name;
+}
+add_filter( 'nmr_create_attachment_file_name', 'example_callback', 10, 1 );
+`
+
+Subscribe to `nmr_before_insert_attachment` filter to be able to change attachment attributes:  caption and description are ‘post_excerpt’ and ‘post_content’.
+For other attributes, check documentation for [wp_insert_attachment](https://developer.wordpress.org/reference/functions/wp_insert_attachment/).
+
+`
+// The filter callback function.
+function before_insert_attachment_callback( $attachment ) {
+    // (maybe) modify $attachment array.
+    return $attachment;
+}
+add_filter( 'nmr_before_insert_attachment', 'before_insert_attachment_callback', 10, 1 );
+`
+
+Optionally, subscribe to `nmr_should_skip_save_attachment_to_media_library` filter to be able to skip saving the attachment to media library: return true to skip, false is the default behaviour that saves the attachment to media library. Filter `nmr_before_insert_attachment` will not be called if skip was true.
+
+`
+// The filter callback function.
+function skip_media_library_callback( $skip_save_to_media_library ) {
+    // return true to skip saving to Media Library, false to save.
+    return true;
+}
+add_filter( 'nmr_should_skip_save_attachment_to_media_library', 'skip_media_library_callback', 10, 1 );
+`
+
+This plugin will send the final attachment id if you are interested in getting other details, like attachment url.
+Listen to `nmr_create_attachment_id_generated` action.
+
+`
+// The action callback function.
+function example_callback_id_generated( $attachment_id ) {
+    // (maybe) do something with the args.
+    $url = wp_get_attachment_url( $attachment_id );
+}
+add_action( 'nmr_create_attachment_id_generated', 'example_callback_id_generated', 10, 1 );
+`
+
+= Docs & Support =
+
+Check the [support forum](https://wordpress.org/support/plugin/store-file-uploads-for-contact-form-7/) on WordPress.org. If you can't locate any topics that pertain to your particular issue, post a new topic for it.
+
+= Store file uploads for Contact Form 7 Needs Your Support =
+
+It is hard to continue development and support for this free plugin without contributions from users like you. If you enjoy using -Store file uploads for Contact Form 7- and find it useful, please consider [__making a donation__](https://paypal.me/mirceatm). Your donation will help encourage and support the plugin's continued development and better user support.
+
+= Privacy Notices =
+
+With the default configuration, this plugin, in itself, does not:
+
+* track users by stealth;
+* write any user personal data to the database;
+* send any data to external servers;
+* use cookies.
+
+It will, however store uploaded files trough Contact Form 7 in Wordpress Media Library.
+Make sure your website users are aware of this fact!!!
+
+== Installation ==
+
+1. Upload the entire  folder to the `/wp-content/plugins/` directory.
+1. Activate the plugin through the 'Plugins' menu in WordPress.
+
+After that check Media Library for uploaded files.
+
+
+== Screenshots ==
+
+1. Settings tab — per-form control (save toggle, custom folder, rename pattern per form), global options, and developer hooks info. Pro features shown as locked preview.
+2. Upload Log tab (Pro) — every CF7 file upload listed with form name, field, date, file size, and a direct view/download link.
+
+== Pro Version ==
+
+Need more? The **Pro version** adds 13 features:
+
+* Per-form control — choose which forms save files, set custom folder and rename pattern per form
+* Auto-rename — rename files using patterns like `{name}-{date}.{ext}` from other CF7 fields
+* Unique filenames — automatically avoid overwriting files with the same name
+* Custom upload folder — save files to a specific subfolder per form
+* File URL in email — replace `[file]` mail tag with a clickable link instead of an attachment
+* Skip-mail compatibility — save files even when CF7's `skip_mail: on` is set
+* Upload log — admin screen listing every uploaded file with form, date, size, and download link
+* Private files — store files outside the Media Library with access protection
+* Admin notification — receive an email with file link on every upload
+* Flamingo integration — link uploaded files to Flamingo inbound message entries
+* Auto-delete — remove uploads older than a configurable number of days
+* Image resize / compress — resize and compress images on upload
+* Duplicate detection — skip saving if the same file was already uploaded (MD5 check)
+
+[Get Pro &rarr;](https://namir.ro/downloads/store-file-uploads-for-contact-form-7-pro/)
+
+== Changelog ==
+
+= 1.3.0 =
+
+* Added Pro upsell admin page (Settings > Store CF7 Uploads) showing locked Pro features
+
+= 1.2.3 =
+
+Add support for skipping saving to Media Library by using `nmr_should_skip_save_attachment_to_media_library` filter
+
+= 1.2.2 =
+
+Add support for changing attachment attributes using `nmr_before_insert_attachment` filter
+
+= 1.2.1 =
+
+* Added support for media uploads (including mp3)
+
+= 1.2.0 =
+
+* Added filter `nmr_create_attachment_file_name` and action `nmr_create_attachment_id_generated`
+
+= 1.1.0 =
+
+* Contact Form 7 `WPCF7_Submission::get_instance()->uploaded_files` changed in CF7 5.4, so adjustments in this plugin were needed.
+
+
+= 1.0.0 =
+
+* First version.
